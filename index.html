@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Stopxxl est une application de contrôle parental nouvelle génération avec blocage anti-désinstallation, mode extrême, et intelligence artificielle pour protéger le téléphone de votre enfant.">
+<title>Stopxxl — Contrôle parental</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0b0a;
+    --panel: #131513;
+    --panel-2: #191c19;
+    --line: #23261f;
+    --green: #3cda82;
+    --green-dim: #23a862;
+    --white: #fdfdfd;
+    --muted: #8f958e;
+    --amber: #e8b23d;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg); color:var(--white);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    font-size: 16px;
+  }
+  h1,h2,h3{font-family:'Space Grotesk', sans-serif; letter-spacing:-0.02em;}
+  .mono{font-family:'JetBrains Mono', monospace;}
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
+  a:focus-visible, button:focus-visible{outline:2px solid var(--green); outline-offset:3px;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  /* NAV */
+  header{ position:sticky; top:0; z-index:50; background:rgba(10,11,10,0.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
+  nav{ display:flex; align-items:center; justify-content:space-between; padding:18px 32px; max-width:1180px; margin:0 auto;}
+  .logo{ font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:22px; display:flex; align-items:center; gap:8px;}
+  .logo .dot{color:var(--green);}
+  .navlinks{display:flex; gap:32px; font-size:15px; color:var(--muted);}
+  .navlinks a:hover{color:var(--white);}
+  .nav-cta{ background:var(--green); color:#04140a; font-weight:600; font-size:15px; padding:10px 20px; border-radius:6px;}
+  .nav-cta:hover{background:#4fe895;}
+  @media (max-width:780px){ .navlinks{display:none;} }
+
+  /* TICKER */
+  .ticker-bar{ border-bottom:1px solid var(--line); background:var(--panel); overflow:hidden; white-space:nowrap; position:relative;}
+  .ticker-track{ display:inline-flex; animation: scroll-left 40s linear infinite; padding:11px 0;}
+  @keyframes scroll-left{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+  .tick{ display:inline-flex; align-items:center; gap:10px; padding:0 28px; font-size:13px; color:var(--muted); border-right:1px solid var(--line);}
+  .tick .tag{color:var(--green); font-weight:700;}
+
+  /* HERO */
+  .hero{ padding:100px 32px 80px; position:relative; overflow:hidden;}
+  .hero::before{ content:""; position:absolute; top:-150px; left:50%; transform:translateX(-50%); width:600px; height:600px; background:radial-gradient(circle, rgba(60,218,130,0.15) 0%, rgba(0,0,0,0) 70%); z-index:-1; pointer-events:none;}
+  .hero-inner{ max-width:1180px; margin:0 auto; display:grid; grid-template-columns:1.1fr 0.9fr; gap:60px; align-items:center;}
+  @media (max-width:900px){ .hero-inner{grid-template-columns:1fr;} }
+  .eyebrow{ font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.12em; color:var(--green); text-transform:uppercase; margin-bottom:20px; display:flex; align-items:center; gap:8px;}
+  .eyebrow .pulse{ width:7px; height:7px; border-radius:50%; background:var(--green); animation:pulse 2s infinite;}
+  @keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(60,218,130,.5);} 70%{box-shadow:0 0 0 10px rgba(60,218,130,0);} 100%{box-shadow:0 0 0 0 rgba(60,218,130,0);} }
+  .hero h1{ font-size:58px; line-height:1.05; font-weight:700; margin-bottom:22px;}
+  .hero h1 span{color:var(--green);}
+  .hero p.lead{ font-size:18px; color:var(--muted); max-width:480px; line-height:1.6; margin-bottom:36px;}
+
+  .dl-row{display:flex; gap:14px; flex-wrap:wrap;}
+  .dl-btn{ display:flex; align-items:center; gap:12px; background:var(--green); color:#04140a; padding:14px 24px; border-radius:10px; font-weight:600; font-size:15px; transition:transform .15s, background .15s;}
+  .dl-btn:hover{ background:#4fe895; transform:translateY(-2px);}
+  .dl-btn .icon{font-size:20px;}
+  .dl-btn .txt small{display:block; font-size:10px; opacity:.75; text-transform:uppercase; letter-spacing:.06em;}
+  .dl-btn .txt strong{font-size:17px; font-family:'Space Grotesk';}
+  .dl-btn.secondary{ background:var(--panel-2); color:var(--white); border:1px solid var(--line);}
+  .dl-btn.secondary:hover{ border-color:var(--green); background:var(--panel-2);}
+  .apk-note{ margin-top:14px; font-size:13px; color:var(--muted);}
+  .apk-note b{color:var(--white);}
+
+  .hero-visual{ position:relative; display:flex; justify-content:center;}
+  .phone-card{ background:var(--panel); border:1px solid var(--line); border-radius:16px; width:100%; max-width:340px; padding:24px; box-shadow:0 30px 60px -20px rgba(0,0,0,0.6); animation: floatCard 6s ease-in-out infinite;}
+  @keyframes floatCard { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); box-shadow:0 40px 70px -20px rgba(0,0,0,0.7); } 100% { transform: translateY(0px); } }
+  .phone-card .card-head{ display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--muted); margin-bottom:18px; font-family:'JetBrains Mono';}
+  .prot-badge{color:var(--green); display:flex; align-items:center; gap:6px;}
+  .prot-badge::before{content:""; width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 1.6s infinite;}
+  .app-row{ display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid var(--line);}
+  .app-row:last-child{border-bottom:none;}
+  .app-name{font-size:16px; font-weight:500;}
+  .app-time{font-family:'JetBrains Mono'; font-size:12px; color:var(--muted);}
+  .status-pill{ font-family:'JetBrains Mono'; font-size:11px; padding:5px 10px; border-radius:6px; border:1px solid var(--line);}
+  .status-pill.blocked{ color:#e8615f; border-color:rgba(232,97,95,.3); background:rgba(232,97,95,.08);}
+  .status-pill.ok{ color:var(--green); border-color:rgba(60,218,130,.3); background:rgba(60,218,130,.08);}
+
+  /* SECTIONS */
+  section{padding:90px 32px;}
+  .section-head{max-width:580px; margin-bottom:56px;}
+  .section-head .eyebrow{color:var(--muted);}
+  .section-head h2{font-size:38px; font-weight:600; line-height:1.15;}
+  .section-head p{color:var(--muted); margin-top:14px; font-size:16px; line-height:1.6;}
+
+  /* SOCIAL PROOF */
+  .social-proof{ border-top:1px solid var(--line); padding-top:56px; padding-bottom:56px;}
+  .proof-stats{ display:flex; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:14px; overflow:hidden; margin-bottom:48px;}
+  .proof-stat{ flex:1; background:var(--panel); padding:26px 20px; text-align:center;}
+  .proof-stat .val{ font-family:'Space Grotesk'; font-size:30px; font-weight:700; color:var(--green);}
+  .proof-stat .lbl{ font-size:14px; color:var(--muted); margin-top:4px;}
+  @media (max-width:700px){ .proof-stats{flex-wrap:wrap;} .proof-stat{flex:1 1 45%;} }
+
+  .rating-row{ display:flex; align-items:center; gap:14px; margin-bottom:36px;}
+  .stars{ color:var(--amber); font-size:20px; letter-spacing:2px;}
+  .rating-row .score{ font-family:'Space Grotesk'; font-size:20px; font-weight:700;}
+  .rating-row .count{ font-size:13px; color:var(--muted);}
+
+  .testimonials{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media (max-width:900px){ .testimonials{grid-template-columns:1fr;} }
+  .testi{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:26px;}
+  .testi .stars{ font-size:14px; margin-bottom:14px; display:block;}
+  .testi p{ font-size:15px; color:var(--white); opacity:.9; line-height:1.6; margin-bottom:18px;}
+  .testi .who{ font-size:14px; color:var(--muted); display:flex; align-items:center; gap:8px;}
+  .testi .avatar{ width:26px; height:26px; border-radius:50%; background:var(--panel-2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono'; font-size:11px; color:var(--green);}
+
+  /* PERMISSIONS */
+  .permissions{ border-top:1px solid var(--line);}
+  .perm-list{ display:flex; flex-direction:column; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:14px; overflow:hidden;}
+  .perm{ background:var(--panel); padding:22px 26px; display:flex; gap:20px; align-items:flex-start;}
+  .perm .glyph{ font-family:'JetBrains Mono'; color:var(--green); font-size:13px; border:1px solid var(--line); border-radius:6px; padding:6px 9px; flex-shrink:0; margin-top:2px;}
+  .perm h4{ font-size:16px; margin-bottom:6px; font-weight:600;}
+  .perm p{ font-size:14px; color:var(--muted); line-height:1.6;}
+
+  /* FAQ */
+  .faq{ border-top:1px solid var(--line);}
+  .faq-list{ display:flex; flex-direction:column; gap:10px;}
+  .faq-item{ background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  .faq-item summary{ padding:20px 24px; font-size:16px; font-weight:500; cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:12px;}
+  .faq-item summary::-webkit-details-marker{ display:none;}
+  .faq-item summary::after{ content:"+"; font-family:'JetBrains Mono'; color:var(--green); font-size:18px; flex-shrink:0;}
+  .faq-item[open] summary::after{ content:"–";}
+  .faq-item .a{ padding:0 24px 20px; font-size:15px; color:var(--muted); line-height:1.65;}
+
+  .features{border-top:1px solid var(--line);}
+  .feat-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:14px; overflow:hidden;}
+  @media (max-width:820px){ .feat-grid{grid-template-columns:1fr;} }
+  .feat{background:var(--panel); padding:32px 28px;}
+  .feat .num{font-family:'JetBrains Mono'; font-size:12px; color:var(--green); margin-bottom:16px;}
+  .feat h3{font-size:20px; margin-bottom:10px; font-weight:600;}
+  .feat p{font-size:15px; color:var(--muted); line-height:1.6;}
+
+  /* PRICING */
+  .pricing{border-top:1px solid var(--line);}
+  .plans{ display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+  @media (max-width:780px){ .plans{grid-template-columns:1fr;} }
+  .plan{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:36px 32px; display:flex; flex-direction:column;}
+  .plan.highlight{ border-color:var(--green); background:linear-gradient(180deg, rgba(60,218,130,0.06), var(--panel) 40%); position:relative;}
+  .plan.highlight::before{ content:"RECOMMANDÉ"; position:absolute; top:-11px; left:32px; background:var(--green); color:#04140a; font-family:'JetBrains Mono'; font-size:10px; font-weight:700; letter-spacing:.06em; padding:4px 10px; border-radius:5px;}
+  .plan h3{font-size:24px; margin-bottom:6px;}
+  .plan .price{font-family:'Space Grotesk'; font-size:15px; color:var(--muted); margin-bottom:24px;}
+  .plan .price b{font-size:28px; color:var(--white);}
+  .plan ul{list-style:none; flex:1; margin-bottom:24px;}
+  .plan li{ display:flex; gap:10px; align-items:flex-start; font-size:15px; color:var(--muted); padding:9px 0; border-bottom:1px solid var(--line);}
+  .plan li:last-child{border-bottom:none;}
+  .plan li::before{ content:"✓"; color:var(--green); font-weight:700; flex-shrink:0;}
+  .plan.free li::before{color:var(--muted);}
+  .plan-btn{ text-align:center; padding:13px; border-radius:8px; font-weight:600; font-size:15px; background:var(--panel-2); border:1px solid var(--line);}
+  .plan.highlight .plan-btn{background:var(--green); color:#04140a; border:none;}
+  .plan.highlight .plan-btn:hover{background:#4fe895;}
+  .plan.free .plan-btn:hover{border-color:var(--green);}
+  .payment-note{ margin-top:22px; font-size:15px; color:var(--muted); text-align:center;}
+
+  .cta-band{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:linear-gradient(180deg, var(--panel), var(--bg)); text-align:center;}
+  .cta-band h2{font-size:36px; margin-bottom:14px;}
+  .cta-band p{color:var(--muted); margin-bottom:32px; font-size:16px;}
+  .cta-band .dl-row{justify-content:center;}
+
+  .notice{ border-top:1px solid var(--line); background:var(--panel);}
+  .notice-box{ display:flex; gap:20px; align-items:flex-start; background:var(--panel-2); border:1px solid var(--line); border-left:3px solid var(--amber); border-radius:10px; padding:26px 28px;}
+  .notice-box .glyph{font-family:'JetBrains Mono'; color:var(--amber); font-size:18px; font-weight:700;}
+  .notice-box h3{font-size:17px; margin-bottom:8px; color:var(--white);}
+  .notice-box p{font-size:14px; color:var(--muted); line-height:1.65;}
+
+  footer{ border-top:1px solid var(--line); padding:48px 32px 32px;}
+  .foot-grid{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:32px; margin-bottom:36px;}
+  .foot-col h4{font-size:14px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:14px; font-family:'JetBrains Mono';}
+  .foot-col a{display:block; font-size:15px; color:var(--white); opacity:.8; margin-bottom:10px;}
+  .foot-col a:hover{color:var(--green); opacity:1;}
+  .foot-bottom{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; padding-top:24px; border-top:1px solid var(--line); font-size:14px; color:var(--muted);}
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="logo">stop<span class="dot">xxl</span></div>
+    <div class="navlinks">
+      <a href="#features">Fonctionnalités</a>
+      <a href="#pricing">Tarifs</a>
+      <a href="#download">Télécharger</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <a href="#download" class="nav-cta">Télécharger l'app</a>
+  </nav>
+  <div class="ticker-bar">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow"><span class="pulse"></span> Contrôle parental nouvelle génération</div>
+      <h1>Protégez leur téléphone<br>sans <span>être derrière eux</span>.</h1>
+      <p class="lead">Stopxxl bloque les apps, surveille le temps d'écran et empêche le contournement — pendant que vous, vous n'avez rien à surveiller manuellement.</p>
+      <div class="dl-row">
+        <a href="releases/stopxxl.apk" download class="dl-btn">
+          <span class="icon">⇩</span>
+          <span class="txt"><small>Télécharger</small><strong>Fichier APK (.apk)</strong></span>
+        </a>
+        <a href="#pricing" class="dl-btn secondary">
+          <span class="txt"><small>Voir les</small><strong>Tarifs Premium</strong></span>
+        </a>
+      </div>
+      <p class="apk-note">Installation hors Play Store : autorisez <b>« Sources inconnues »</b> dans les paramètres Android avant l'installation.</p>
+    </div>
+    <div class="hero-visual">
+      <div class="phone-card">
+        <div class="card-head">
+          <span class="prot-badge">PROTECTION ACTIVE</span>
+          <span>Aujourd'hui</span>
+        </div>
+        <div class="app-row">
+          <div><div class="app-name">TikTok</div><div class="app-time">2h14 / 2h max</div></div>
+          <div class="status-pill blocked">Bloqué</div>
+        </div>
+        <div class="app-row">
+          <div><div class="app-name">Navigateur (incognito)</div><div class="app-time">Tentative détectée</div></div>
+          <div class="status-pill blocked">Bloqué</div>
+        </div>
+        <div class="app-row">
+          <div><div class="app-name">Défi concentration</div><div class="app-time">Streak : 6 jours</div></div>
+          <div class="status-pill ok">Actif</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="social-proof">
+  <div class="wrap">
+    <div class="proof-stats">
+      <div class="proof-stat">
+        <div class="val">2026</div>
+        <div class="lbl">Lancement officiel</div>
+      </div>
+      <div class="proof-stat">
+        <div class="val">6</div>
+        <div class="lbl">Fonctionnalités clés</div>
+      </div>
+      <div class="proof-stat">
+        <div class="val">Gratuit</div>
+        <div class="lbl">+ Premium 4,99 $/mois</div>
+      </div>
+      <div class="proof-stat">
+        <div class="val">∞</div>
+        <div class="lbl">Support illimité</div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:32px;">
+      <h3 style="font-size:22px; margin-bottom:12px;">Soyez parmi les premiers.</h3>
+      <p style="color:var(--muted); font-size:15px; max-width:580px; margin:0 auto; line-height:1.6;">Stopxxl vient de lancer. Installez l'app maintenant et aidez-nous à améliorer le contrôle parental pour des milliers de familles.</p>
+    </div>
+  </div>
+</section>
+
+<section class="permissions">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow mono">TRANSPARENCE</div>
+      <h2>Pourquoi Stopxxl demande ces autorisations.</h2>
+      <p>Aucune permission n'est décorative : chacune sert directement une fonctionnalité de protection.</p>
+    </div>
+    <div class="perm-list">
+      <div class="perm">
+        <div class="glyph">01</div>
+        <div><h4>Accessibilité</h4><p>Nécessaire pour détecter quelle application est ouverte à l'écran et appliquer le blocage en temps réel.</p></div>
+      </div>
+      <div class="perm">
+        <div class="glyph">02</div>
+        <div><h4>Statistiques d'utilisation</h4><p>Permet de calculer le temps d'écran par application et de déclencher les limites configurées.</p></div>
+      </div>
+      <div class="perm">
+        <div class="glyph">03</div>
+        <div><h4>VPN local</h4><p>Utilisé uniquement pour bloquer certains domaines pendant les plages horaires programmées — aucune donnée de navigation n'est envoyée à un serveur externe.</p></div>
+      </div>
+      <div class="perm">
+        <div class="glyph">04</div>
+        <div><h4>Administrateur de l'appareil</h4><p>Empêche la désinstallation de l'app sans le code parental (fonctionnalité Premium uniquement).</p></div>
+      </div>
+      <div class="perm">
+        <div class="glyph">05</div>
+        <div><h4>Démarrage automatique</h4><p>Relance la protection après un redémarrage du téléphone, pour éviter toute interruption.</p></div>
+      </div>
+      <div class="perm">
+        <div class="glyph">06</div>
+        <div><h4>Internet</h4><p>Sert à vérifier la licence Premium et à faire fonctionner le coaching parental IA.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow mono">CE QUE FAIT STOPXXL</div>
+      <h2>Une protection qui reste active même quand l'enfant essaie de la retirer.</h2>
+    </div>
+    <div class="feat-grid">
+      <div class="feat">
+        <div class="num">01</div>
+        <h3>Blocage d'applications</h3>
+        <p>Sélectionnez les apps à restreindre. Le blocage reste actif automatiquement, sans intervention manuelle répétée.</p>
+      </div>
+      <div class="feat">
+        <div class="num">02</div>
+        <h3>Anti-navigation privée</h3>
+        <p>Le mode incognito ne permet plus de contourner les restrictions — la protection s'applique aussi en navigation privée.</p>
+      </div>
+      <div class="feat">
+        <div class="num">03</div>
+        <h3>Anti-désinstallation</h3>
+        <p>Une fois activée, l'app ne peut pas être supprimée sans le code parental, via la protection administrateur Android.</p>
+      </div>
+      <div class="feat">
+        <div class="num">04</div>
+        <h3>Planification horaire</h3>
+        <p>Bloquez automatiquement les apps ou internet à des heures fixes : coucher, devoirs, weekend.</p>
+      </div>
+      <div class="feat">
+        <div class="num">05</div>
+        <h3>Défi de concentration</h3>
+        <p>Sessions Pomodoro (15 à 60 min) qui récompensent l'enfant avec des points et un streak quotidien.</p>
+      </div>
+      <div class="feat">
+        <div class="num">06</div>
+        <h3>Coaching parental IA</h3>
+        <p>Posez vos questions sur l'éducation numérique et recevez des conseils personnalisés instantanément.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow mono">TARIFS</div>
+      <h2>Gratuit pour commencer, Premium pour une protection complète.</h2>
+    </div>
+    <div class="plans">
+      <div class="plan free">
+        <h3>Gratuit</h3>
+        <div class="price"><b>0 €</b> / toujours</div>
+        <ul>
+          <li>Blocage de 2 applications</li>
+          <li>Défi de concentration (15 / 25 / 45 / 60 min)</li>
+          <li>Streak quotidien et points</li>
+          <li>Statistiques de temps d'écran de base</li>
+        </ul>
+        <a href="releases/stopxxl.apk" download class="plan-btn">Télécharger gratuitement</a>
+      </div>
+      <div class="plan highlight">
+        <h3>Premium</h3>
+        <div class="price"><b>3,99 $</b> / mois · via Mobile Money</div>
+        <div style="font-size:13px; color:var(--muted); margin-bottom:24px;">ou <b>39,99 $ / an</b> (économisez 12 %)</div>
+        <ul>
+          <li>Blocage d'applications illimité</li>
+          <li>Anti-navigation privée (incognito)</li>
+          <li>Limites de temps personnalisées par app</li>
+          <li>Planification horaire automatique</li>
+          <li>Mode extrême 7 / 14 / 30 jours</li>
+          <li>Anti-désinstallation (protection admin)</li>
+          <li>Coaching parental par IA</li>
+        </ul>
+        <a href="#download" class="plan-btn">Activer le Premium</a>
+      </div>
+    </div>
+    <p class="payment-note">Paiement par Mobile Money → un code de licence est généré et à saisir dans l'app pour activer le Premium.</p>
+  </div>
+</section>
+
+<section class="cta-band" id="download">
+  <div class="wrap">
+    <h2>Installez Stopxxl en quelques minutes.</h2>
+    <p>Téléchargez le fichier APK et suivez les instructions d'installation ci-dessous.</p>
+    <div class="dl-row">
+      <a href="releases/stopxxl.apk" download class="dl-btn">
+        <span class="icon">⇩</span>
+        <span class="txt"><small>Télécharger</small><strong>stopxxl.apk</strong></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="notice">
+  <div class="wrap">
+    <div class="notice-box">
+      <div class="glyph">i</div>
+      <div>
+        <h3>Une app à installer avec l'accord et la connaissance du foyer.</h3>
+        <p>Stopxxl est conçu comme un outil de contrôle parental, à utiliser sur les appareils dont vous êtes responsable légalement (vos enfants mineurs). Installer un logiciel de surveillance sur l'appareil d'une autre personne majeure sans son consentement peut être illégal selon votre juridiction.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="faq" id="faq">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow mono">QUESTIONS FRÉQUENTES</div>
+      <h2>Tout ce qu'on nous demande le plus souvent.</h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary>Est-ce sans danger d'installer un fichier APK hors Play Store ?</summary>
+        <div class="a">Oui, à condition de télécharger le fichier depuis une source officielle comme celle-ci. Android affiche un avertissement par défaut pour toute installation hors store — c'est normal et ne signifie pas que le fichier est dangereux, mais vérifiez toujours que vous avez bien le fichier officiel Stopxxl.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Quelles données sont collectées sur mon enfant ?</summary>
+        <div class="a">Stopxxl collecte uniquement les statistiques nécessaires au fonctionnement des fonctionnalités (temps d'écran, apps bloquées). Aucune donnée de navigation détaillée n'est envoyée à des serveurs externes.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Comment fonctionne le paiement Premium ?</summary>
+        <div class="a">Le paiement se fait via Mobile Money. Une fois le paiement confirmé, un code de licence est généré et à saisir dans l'application pour activer le Premium sur le téléphone concerné.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Puis-je annuler mon abonnement Premium ?</summary>
+        <div class="a">Oui, l'abonnement n'est pas reconduit automatiquement par défaut : il expire à la date prévue sauf renouvellement manuel via un nouveau code.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Que se passe-t-il si je perds l'accès au mode extrême ?</summary>
+        <div class="a">Le mode extrême (7/14/30 jours) ne peut être levé avant son terme que par le support Stopxxl, même en cas de réinstallation de l'app — c'est voulu pour éviter tout contournement.</div>
+      </details>
+      <details class="faq-item">
+        <summary>L'app fonctionne-t-elle sans connexion internet ?</summary>
+        <div class="a">Le blocage d'apps et les limites de temps fonctionnent hors ligne. Seules la vérification de licence et le coaching IA nécessitent une connexion internet.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-col">
+        <div class="logo" style="font-size:18px; margin-bottom:6px;">stop<span class="dot">xxl</span></div>
+      </div>
+      <div class="foot-col">
+        <h4>Produit</h4>
+        <a href="#features">Fonctionnalités</a>
+        <a href="#pricing">Tarifs</a>
+        <a href="#download">Télécharger</a>
+      </div>
+      <div class="foot-col">
+        <h4>Légal</h4>
+        <a href="#">Mentions légales</a>
+        <a href="#">Conditions d'utilisation</a>
+      </div>
+      <div class="foot-col">
+        <h4>Contact</h4>
+        <a href="mailto:contactstopxxl.com@gmail.com">contactstopxxl.com@gmail.com</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Stopxxl.</span>
+      <span>Contrôle parental</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const items = [
+    ["Blocage d'apps","GRATUIT (2 apps) / PREMIUM (illimité)"],
+    ["Anti-incognito","PREMIUM"],
+    ["Anti-désinstallation","PREMIUM"],
+    ["Planification horaire","PREMIUM"],
+    ["Mode extrême 7/14/30 jours","PREMIUM"],
+    ["Défi de concentration","GRATUIT"],
+    ["Coaching parental IA","PREMIUM"]
+  ];
+  const track = document.getElementById('tickerTrack');
+  let html = "";
+  for(let i=0;i<2;i++){
+    items.forEach(([label,tag])=>{
+      html += `<span class="tick">${label} <span class="tag">${tag}</span></span>`;
+    });
+  }
+  track.innerHTML = html;
+</script>
+
+</body>
+</html>
